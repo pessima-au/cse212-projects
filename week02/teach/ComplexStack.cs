@@ -22,3 +22,5 @@
         return stack.Count == 0;
     }
 }
+
+//Stack = (, (, 
