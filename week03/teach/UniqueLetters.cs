@@ -1,4 +1,6 @@
-﻿public static class UniqueLetters {
+﻿using System;
+
+public static class UniqueLetters {
     public static void Run() {
         var test1 = "abcdefghjiklmnopqrstuvwxyz"; // Expect True because all letters unique
         Console.WriteLine(AreUniqueLetters(test1));

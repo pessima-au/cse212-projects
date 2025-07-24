@@ -22,7 +22,23 @@ public static class SetsAndMaps
     public static string[] FindPairs(string[] words)
     {
         // TODO Problem 1 - ADD YOUR CODE HERE
-        return [];
+        var wordSet = new HashSet<string>(words);
+        var pairs = new List<string>();
+        foreach (var word in words)
+        {
+            // Skip words with identical letters (e.g., "aa")
+            if (word[0] == word[1]) continue;
+
+            // Find the symmetric pair
+            var reversed = new string(new[] { word[1], word[0] });
+
+            // Only add if the reversed word exists and to avoid duplicates, ensure word is lexicographically smaller
+            if (wordSet.Contains(reversed) && string.Compare(word, reversed) < 0)
+            {
+            pairs.Add($"{word} & {reversed}");
+            }
+        }
+        return pairs.ToArray();
     }
 
     /// <summary>
@@ -43,6 +59,21 @@ public static class SetsAndMaps
         {
             var fields = line.Split(",");
             // TODO Problem 2 - ADD YOUR CODE HERE
+            if (fields.Length > 3)
+            {
+                var degree = fields[3].Trim();
+                if (!string.IsNullOrEmpty(degree))
+                {
+                    if (degrees.TryGetValue(degree, out int count))
+                    {
+                        degrees[degree] = count + 1;
+                    }
+                    else
+                    {
+                        degrees[degree] = 1;
+                    }
+                }
+            }
         }
 
         return degrees;
@@ -54,7 +85,7 @@ public static class SetsAndMaps
     /// new word.  A dictionary is used to solve the problem.
     /// 
     /// Examples:
-    /// is_anagram("CAT","ACT") would return true
+    /// /// is_anagram("CAT","ACT") would return true
     /// is_anagram("DOG","GOOD") would return false because GOOD has 2 O's
     /// 
     /// Important Note: When determining if two words are anagrams, you
@@ -67,7 +98,35 @@ public static class SetsAndMaps
     public static bool IsAnagram(string word1, string word2)
     {
         // TODO Problem 3 - ADD YOUR CODE HERE
-        return false;
+        if (string.IsNullOrWhiteSpace(word1) || string.IsNullOrWhiteSpace(word2))
+            return false;
+
+        // Remove spaces and convert to lowercase
+        var w1 = word1.Replace(" ", "").ToLower();
+        var w2 = word2.Replace(" ", "").ToLower();
+
+        if (w1.Length != w2.Length)
+            return false;
+
+        var dict = new Dictionary<char, int>();
+        foreach (var c in w1)
+        {
+            if (dict.ContainsKey(c))
+                dict[c]++;
+            else
+                dict[c] = 1;
+        }
+
+        foreach (var c in w2)
+        {
+            if (!dict.ContainsKey(c))
+                return false;
+            dict[c]--;
+            if (dict[c] < 0)
+                return false;
+        }
+
+        return dict.Values.All(v => v == 0);
     }
 
     /// <summary>
@@ -96,11 +155,17 @@ public static class SetsAndMaps
 
         var featureCollection = JsonSerializer.Deserialize<FeatureCollection>(json, options);
 
-        // TODO Problem 5:
-        // 1. Add code in FeatureCollection.cs to describe the JSON using classes and properties 
-        // on those classes so that the call to Deserialize above works properly.
-        // 2. Add code below to create a string out each place a earthquake has happened today and its magitude.
-        // 3. Return an array of these string descriptions.
-        return [];
+        // A list of strings describing each earthquake's place and magnitude
+        var summaries = new List<string>();
+        if (featureCollection?.Features != null)
+        {
+            foreach (var feature in featureCollection.Features)
+            {
+                var place = feature?.Properties?.Place ?? "Unknown location";
+                var mag = feature?.Properties?.Mag.HasValue == true ? feature.Properties.Mag.Value.ToString("0.0") : "N/A";
+                summaries.Add($"{place} - (Magnitude: {mag})");
+            }
+        }
+        return summaries.ToArray();
     }
 }

@@ -28,6 +28,7 @@
      * Display pairs of numbers (no duplicates should be displayed) that sum to 
      * 10 using a set in O(n) time.  We are assuming that there are no duplicates 
      * in the list.
+   
      * </summary>
      * <param name="numbers">array of integers</param>
      */
